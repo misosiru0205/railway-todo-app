@@ -4,10 +4,10 @@ import { useCookies } from "react-cookie";
 import axios from "axios";
 import { Header } from "../components/Header";
 import { url } from "../const";
-import "./home.css";
+import "./home.scss";
 
 
-export const Home = () => {
+export function Home() {
   const [isDoneDisplay, setIsDoneDisplay] = useState("todo"); // todo->未完了 done->完了
   const [lists, setLists] = useState([]);
   const [selectListId, setSelectListId] = useState();
@@ -82,6 +82,7 @@ export const Home = () => {
                   key={key}
                   className={`list-tab-item ${isActive ? "active" : ""}`}
                   onClick={() => handleSelectList(list.id)}
+                  aria-hidden="true"
                 >
                   {list.title}
                 </li>
@@ -108,16 +109,14 @@ export const Home = () => {
 }
 
 // 表示するタスク
-const Tasks = (props) => {
+function Tasks(props) {
   const { tasks, selectListId, isDoneDisplay } = props;
   if (tasks === null) return <></>
 
   if(isDoneDisplay === "done"){
     return (
       <ul>
-        {tasks.filter((task) => {
-          return task.done === true
-        })
+        {tasks.filter((task) => task.done === true)
         .map((task, key) => (
           <li key={key} className="task-item">
             <Link to={`/lists/${selectListId}/tasks/${task.id}`} className="task-item-link">
@@ -132,9 +131,7 @@ const Tasks = (props) => {
 
   return (
     <ul>
-      {tasks.filter((task) => {
-        return task.done === false
-      })
+      {tasks.filter((task) => task.done === false)
       .map((task, key) => (
         <li key={key} className="task-item">
           <Link to={`/lists/${selectListId}/tasks/${task.id}`} className="task-item-link">
