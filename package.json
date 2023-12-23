@@ -29,7 +29,9 @@
   },
   "scripts": {
     "lint": "eslint src/**/*.{jsx,js}",
-    "fix": "eslint --fix src/**/*.{jsx,js}",
+    "lint:fix": "eslint --fix src/**/*.{jsx,js}",
+    "prettier:c": "prettier --check src/**/*.{jsx,js,scss}",
+    "prettier:w": "prettier --write src/**/*.{jsx,js,scss}",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
