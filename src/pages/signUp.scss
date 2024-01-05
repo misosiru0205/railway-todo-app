@@ -1,7 +1,6 @@
 @charset "utf-8";
 
 .signup {
-  width: 500px;
   margin: 0 auto;
   .error-message {
     color: #ff3333;
@@ -14,9 +13,7 @@
     .email-input,
     .name-input,
     .password-input {
-      width: 100%;
-      font-size: large;
-      height: 30px;
+      width: 98%;
       margin-bottom: 25px;
     }
 

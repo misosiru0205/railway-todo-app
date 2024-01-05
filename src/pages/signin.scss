@@ -1,7 +1,6 @@
 @charset "utf-8";
 
 .signin {
-  width: 500px;
   margin: 0 auto;
 
   .error-message {
@@ -18,9 +17,7 @@
 
     .email-input,
     .password-input {
-      width: 100%;
-      font-size: large;
-      height: 30px;
+      width: 98%;
       margin-bottom: 25px;
     }
 

@@ -13,6 +13,7 @@ export function Home() {
   const [tasks, setTasks] = useState([])
   const [errorMessage, setErrorMessage] = useState('')
   const [cookies] = useCookies()
+  const [nowtime, setNowtime] = useState('') //時間表示用、無くてもいい
   const handleIsDoneDisplayChange = (e) => setIsDoneDisplay(e.target.value)
   useEffect(() => {
     axios
@@ -63,6 +64,25 @@ export function Home() {
         setErrorMessage(`タスクの取得に失敗しました。${err}`)
       })
   }
+
+  useEffect(() => {
+    function setTime() {
+      const LocalSeconds = Date.now()
+      const LocalTime = new Date(LocalSeconds)
+      setNowtime(
+        `現在時刻 : ${LocalTime.getFullYear()}-${
+          LocalTime.getMonth() + 1
+        }-${LocalTime.getDate()}  ${LocalTime.getHours()}:${LocalTime.getMinutes()}:${LocalTime.getSeconds()}`
+      )
+    }
+
+    const val = setInterval(() => {
+      setTime()
+    }, 1000)
+
+    return () => clearInterval(val)
+  }, [])
+
   return (
     <div>
       <Header />
@@ -82,17 +102,23 @@ export function Home() {
               </p>
             </div>
           </div>
-          <ul className="list-tab">
+          <ul className="list-tab" role="tablist" /*ロールの追加*/>
             {lists.map((list, key) => {
               const isActive = list.id === selectListId
               return (
-                <li
-                  key={key}
+                <li //ロールの追加
                   className={`list-tab-item ${isActive ? 'active' : ''}`}
-                  onClick={() => handleSelectList(list.id)}
-                  aria-hidden="true"
+                  role="presentation"
+                  key={key}
                 >
-                  {list.title}
+                  <button //buttonとロールの追加 clickイベントの移動
+                    aria-label={list.title}
+                    role="tab"
+                    className="list-tab-button"
+                    onClick={() => handleSelectList(list.id)}
+                  >
+                    {list.title}
+                  </button>
                 </li>
               )
             })}
@@ -111,6 +137,7 @@ export function Home() {
                 <option value="done">完了</option>
               </select>
             </div>
+            <p>{nowtime}</p>
             <Tasks
               tasks={tasks}
               selectListId={selectListId}
@@ -149,6 +176,40 @@ function Tasks(props) {
     )
   }
 
+  //日時表示変換
+  function TaskLimit(taskLimit) {
+    const param = new Date(taskLimit) - 3600000 * 9 //受け取ったlimitはUTCなので―9時間分にしておく
+    const limit = new Date(param)
+    const year = limit.getFullYear()
+    const month = `0${limit.getMonth() + 1}`.slice(-2)
+    const date = `0${limit.getDate()}`.slice(-2)
+    const hours = `0${limit.getHours()}`.slice(-2)
+    const minutes = `0${limit.getMinutes()}`.slice(-2)
+    return `期限 : ${year}-${month}-${date}  ${hours}:${minutes}`
+  }
+
+  function TimeLeft(taskLimit) {
+    const LimitSeconds = new Date(taskLimit) - 3600000 * 9
+    const LocalSeconds = Date.now()
+    const LeftSeconds = Math.floor((LimitSeconds - LocalSeconds) / 1000)
+    const seconds = `0${Math.floor(LeftSeconds % 60)}`.slice(-2)
+    const minutes = `0${Math.floor((LeftSeconds / 60) % 60)}`.slice(-2)
+    const hours = Math.floor((LeftSeconds / 60 / 60) % 24)
+    const date = Math.floor(LeftSeconds / 60 / 60 / 24)
+
+    if (LimitSeconds > LocalSeconds) {
+      if (date === 0) {
+        return `期限まで ${hours}:${minutes}:${seconds}`
+      } else {
+        return `期限まで ${date}日${`0${hours}`.slice(
+          -2
+        )}:${minutes}:${seconds}`
+      }
+    } else {
+      return '期限切れ'
+    }
+  }
+
   return (
     <ul>
       {tasks
@@ -162,6 +223,10 @@ function Tasks(props) {
               {task.title}
               <br />
               {task.done ? '完了' : '未完了'}
+              <br />
+              {TaskLimit(task.limit)}
+              <br />
+              {TimeLeft(task.limit)}
             </Link>
           </li>
         ))}

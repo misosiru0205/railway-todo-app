@@ -1,7 +1,6 @@
 @charset "utf-8";
 
 .new-list {
-  width: 1000px;
   margin: 0 auto;
 
   .new-list-form {
@@ -10,6 +9,9 @@
     .new-list-title {
       width: 300px;
       margin-bottom: 25px;
+      @media screen and (max-width: 320px) {
+        width: 250px;
+      }
     }
 
     .new-list-button {

@@ -13,31 +13,43 @@ export function EditTask() {
   const [title, setTitle] = useState('')
   const [detail, setDetail] = useState('')
   const [isDone, setIsDone] = useState()
+  const [limit, setLimit] = useState('') //期限の再設定用ステート
+  const [nowTime, setNowtime] = useState('') //現在時刻のstate
   const [errorMessage, setErrorMessage] = useState('')
   const handleTitleChange = (e) => setTitle(e.target.value)
   const handleDetailChange = (e) => setDetail(e.target.value)
   const handleIsDoneChange = (e) => setIsDone(e.target.value === 'done')
+  const handlelimitChange = (e) => {
+    //再設定した期限の取得とset
+    setLimit(`${e.target.value}:00Z`)
+  }
   const onUpdateTask = () => {
     console.log(isDone)
     const data = {
       title,
       detail,
       done: isDone,
+      limit,
     }
 
-    axios
-      .put(`${url}/lists/${listId}/tasks/${taskId}`, data, {
-        headers: {
-          authorization: `Bearer ${cookies.token}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data)
-        navigate('/')
-      })
-      .catch((err) => {
-        setErrorMessage(`更新に失敗しました。${err}`)
-      })
+    if (Date.now() < new Date(limit) - 3600000 * 9 || isDone === true) {
+      //期限切れ日時防止用 と完了時に通せるようにする 
+      axios
+        .put(`${url}/lists/${listId}/tasks/${taskId}`, data, {
+          headers: {
+            authorization: `Bearer ${cookies.token}`,
+          },
+        })
+        .then((res) => {
+          console.log(res.data)
+          navigate('/')
+        })
+        .catch((err) => {
+          setErrorMessage(`更新に失敗しました。${err}`)
+        })
+    } else {
+      setErrorMessage(`更新に失敗しました。過去の日時を入力しないでください`)
+    }
   }
 
   const onDeleteTask = () => {
@@ -67,10 +79,32 @@ export function EditTask() {
         setTitle(task.title)
         setDetail(task.detail)
         setIsDone(task.done)
+        setLimit(task.limit) //受け取ったタスクの期限をセット
       })
       .catch((err) => {
         setErrorMessage(`タスク情報の取得に失敗しました。${err}`)
       })
+  }, [])
+
+  useEffect(() => {
+    //現在時刻の取得
+    const timeNow = () => {
+      const LocalSeconds = Date.now()
+      const LocalTime = new Date(LocalSeconds)
+      const year = LocalTime.getFullYear() //年の変換
+      const month = `0${LocalTime.getMonth() + 1}`.slice(-2) //月の変換と0埋め
+      const date = `0${LocalTime.getDate()}`.slice(-2) //日の変換と0埋め
+      const hours = `0${LocalTime.getHours()}`.slice(-2) //時の変換と0埋め
+      const minutes = `0${LocalTime.getMinutes()}`.slice(-2) //分の変換と0埋め
+      setNowtime(`${year}-${month}-${date}T${hours}:${minutes}`) //stateへの更新
+    }
+
+    const val = setInterval(() => {
+      // 1秒ごとにdatenowの更新
+      timeNow()
+    }, 1000)
+
+    return () => clearInterval(val)
   }, [])
 
   return (
@@ -96,6 +130,17 @@ export function EditTask() {
             onChange={handleDetailChange}
             className="edit-task-detail"
             value={detail}
+          />
+          <br />
+          <label>期限変更</label>
+          {/**期限変更用 受け取ったlimitを使って最初の期限を表示 */}
+          <br />
+          <input
+            type="datetime-local"
+            min={nowTime}
+            value={limit.slice(0, 16)}
+            onChange={handlelimitChange}
+            className="edit-task-limit"
           />
           <br />
           <div>

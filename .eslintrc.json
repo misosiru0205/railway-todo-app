@@ -16,7 +16,6 @@
         "jsx-a11y/label-has-for": "off",
         "react/react-in-jsx-scope" : "off",
         "react/jsx-filename-extension" : "off",
-        "no-unused-vars" : "off",
         "react/button-has-type" : "off",
         "react/jsx-no-useless-fragment" : "off",
         "import/order" : "off",
@@ -25,6 +24,8 @@
         "react/prop-types" : "off",
         "react/no-array-index-key" : "off",
         "consistent-return" : "off",
-        "no-undef" : "off"
+        "no-undef" : "off",
+        "spaced-comment" : "off",
+        "no-else-return" :"off"
     }
 }
