@@ -3,7 +3,6 @@
 .taskList {
   margin: 50px auto;
   list-style: none;
-  //width: 1000px;
 
   .error-message {
     color: #ff3333;
@@ -22,6 +21,7 @@
     display: flex;
     overflow-x: auto;
     .list-tab-item {
+      
       flex-shrink: 0;
       text-overflow: normal;
       margin-right: 5px;

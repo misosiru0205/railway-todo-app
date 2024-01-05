@@ -65,7 +65,7 @@ export function Home() {
       })
   }
 
-  useEffect(() => {
+  useEffect(() => { //現在時刻取得用、別に無くてもいい
     function setTime() {
       const LocalSeconds = Date.now()
       const LocalTime = new Date(LocalSeconds)
@@ -102,11 +102,11 @@ export function Home() {
               </p>
             </div>
           </div>
-          <ul className="list-tab" role="tablist" /*ロールの追加*/>
+          <ul className="list-tab" role="tablist"/*ロールの追加*/>
             {lists.map((list, key) => {
               const isActive = list.id === selectListId
               return (
-                <li //ロールの追加
+                <li//ロールの追加
                   className={`list-tab-item ${isActive ? 'active' : ''}`}
                   role="presentation"
                   key={key}
@@ -179,16 +179,16 @@ function Tasks(props) {
   //日時表示変換
   function TaskLimit(taskLimit) {
     const param = new Date(taskLimit) - 3600000 * 9 //受け取ったlimitはUTCなので―9時間分にしておく
-    const limit = new Date(param)
+    const limit = new Date(param)//日本時に変換
     const year = limit.getFullYear()
-    const month = `0${limit.getMonth() + 1}`.slice(-2)
+    const month = `0${limit.getMonth() + 1}`.slice(-2)//0を足し、sliceで右から二つの数を取り出す
     const date = `0${limit.getDate()}`.slice(-2)
     const hours = `0${limit.getHours()}`.slice(-2)
     const minutes = `0${limit.getMinutes()}`.slice(-2)
-    return `期限 : ${year}-${month}-${date}  ${hours}:${minutes}`
+    return `期限 : ${year}-${month}-${date}  ${hours}:${minutes}`//ユーザーに見やすいように表示
   }
 
-  function TimeLeft(taskLimit) {
+  function TimeLeft(taskLimit) {//残り期限用
     const LimitSeconds = new Date(taskLimit) - 3600000 * 9
     const LocalSeconds = Date.now()
     const LeftSeconds = Math.floor((LimitSeconds - LocalSeconds) / 1000)
@@ -224,9 +224,9 @@ function Tasks(props) {
               <br />
               {task.done ? '完了' : '未完了'}
               <br />
-              {TaskLimit(task.limit)}
+              {TaskLimit(task.limit)}{/**タスク期限用 */}
               <br />
-              {TimeLeft(task.limit)}
+              {TimeLeft(task.limit)}{/**残り時間用 */}
             </Link>
           </li>
         ))}
